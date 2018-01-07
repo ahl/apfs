@@ -224,7 +224,7 @@ do_list(const char *vol)
 	}
 
 	char *p = &abuf[0];
-	for (int i; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		char *field = p;
 		uint32_t len = *(uint32_t *)field;
 		field += sizeof (uint32_t);
