@@ -5,7 +5,7 @@
 all: snapUtil
 
 snapUtil: snapUtil.c
-	clang -o snapUtil snapUtil.c
+	clang -Wall -Os -g -o snapUtil snapUtil.c
 
 clean:
 	rm -f snapUtil

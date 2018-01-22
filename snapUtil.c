@@ -12,102 +12,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/attr.h>
-#include <sys/stat.h>
-
-#define	SNAPSHOT_OP_CREATE	0x01
-#define	SNAPSHOT_OP_DELETE	0x02
-#define	SNAPSHOT_OP_RENAME	0x03
-#define	SNAPSHOT_OP_MOUNT	0x04
-#define	SNAPSHOT_OP_REVERT	0x05
-
-#define	FSOPT_LIST_SNAPSHOT	0x40
-
-int
-__fs_snapshot(int op, int dirfd, const char *name, const char *nw,
-    void *mnt, uint32_t flags)
-{
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-	return (syscall(SYS_fs_snapshot, op, dirfd, name, nw, mnt, flags));
-}
-
-int
-fs_snapshot_create(int dirfd, const char *name, uint32_t flags)
-{
-	return __fs_snapshot(SNAPSHOT_OP_CREATE, dirfd, name, NULL, NULL, flags);
-}
-
-int
-fs_snapshot_list(int dirfd, struct attrlist *alist, void *attrbuf,
-    size_t bufsize, uint32_t flags)
-{
-	if (flags != 0) {
-		errno = EINVAL;
-		return (-1);
-	}
-
-	return (getattrlistbulk(dirfd, alist, attrbuf, bufsize,
-	    FSOPT_LIST_SNAPSHOT));
-}
-
-int
-fs_snapshot_delete(int dirfd, const char *name, uint32_t flags)
-{
-	return __fs_snapshot(SNAPSHOT_OP_DELETE, dirfd, name, NULL, NULL, flags);
-}
-
-int
-fs_snapshot_rename(int dirfd, const char *old, const char *nw, uint32_t flags)
-{
-	return __fs_snapshot(SNAPSHOT_OP_RENAME, dirfd, old, nw, NULL, flags);
-}
-
-int
-fs_snapshot_revert(int dirfd, const char *name, uint32_t flags)
-{
-    return __fs_snapshot(SNAPSHOT_OP_REVERT, dirfd, name, NULL, NULL, flags);
-}
-
-#define FS_MOUNT_SNAPSHOT 2
-#define MAX_SNAPSHOT_NAMELEN    256
-
-struct fs_mount_options {
-        uint32_t fs_flags;
-        uint8_t _padding_[2];
-};
-
-struct fs_mount_args {
-        char *specdev;
-        struct fs_mount_options options;
-        uint16_t mode;
-        uint16_t _padding_[3];
-        union {
-                struct {                        // FS_MOUNT_SNAPSHOT
-                        dev_t snap_fsys;
-                        char snap_name[MAX_SNAPSHOT_NAMELEN];
-                };
-                struct {                        // APFS_MOUNT_FOR_CONVERSION
-                };
-        };
-};
-
-int
-fs_snapshot_mount(int dirfd, const char *dir, const char *snapshot,
-    uint32_t flags)
-{
-        struct stat st;
-        struct fs_mount_args mnt_args;
-
-        mnt_args.specdev = NULL;
-        mnt_args.mode = FS_MOUNT_SNAPSHOT;
-        if (fstat(dirfd, &st) == -1)
-                return (-1);
-
-        mnt_args.snap_fsys = st.st_dev;
-        strlcpy(mnt_args.snap_name, snapshot, sizeof(mnt_args.snap_name));
-        return (__fs_snapshot(SNAPSHOT_OP_MOUNT, dirfd, snapshot, dir,
-            (void *)&mnt_args, flags));
-}
-
+#include <sys/snapshot.h>
 
 const char *g_pname;
 
@@ -224,7 +129,7 @@ do_list(const char *vol)
 	}
 
 	char *p = &abuf[0];
-	for (int i; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		char *field = p;
 		uint32_t len = *(uint32_t *)field;
 		field += sizeof (uint32_t);
