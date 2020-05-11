@@ -20,13 +20,12 @@ void
 usage(void)
 {
 	(void) fprintf(stderr, "Usage:\n");
-	(void) fprintf(stderr, "\t%s -l <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -c <snap> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -n <snap> <newname> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -d <snap> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -r <snap> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -s <snap> <vol> <mntpnt>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -u <snap> <vol>\n", g_pname);
+	(void) fprintf(stderr, "\t%s -l <vol>\t\t\t(List all snapshots)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -c <snap> <vol>\t\t(Create snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -n <snap> <newname> <vol>\t(Rename snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -d <snap> <vol>\t\t(Delete snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -r <snap> <vol>\t\t(Revert to snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -s <snap> <vol> <mntpnt>\t(Mount snapshot)\n", g_pname);
 	exit(2);
 }
 
@@ -153,7 +152,7 @@ do_list(const char *vol)
 int
 main(int argc, char **argv)
 {
-	g_pname = strrchr(argv[0], '/') + 1;
+	g_pname = argv[0];
 
 	if (argc < 3 || argv[1][0] != '-' ||
 	    argv[1][1] == '\0' || argv[1][2] != '\0') {
