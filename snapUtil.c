@@ -122,28 +122,32 @@ do_list(const char *vol)
 
 	alist.commonattr = ATTR_BULK_REQUIRED;
 
-	int count = fs_snapshot_list(dirfd, &alist, &abuf[0], sizeof (abuf), 0);
-	if (count < 0) {
-		perror("fs_snapshot_list");
-		exit(1);
-	}
+	for (;;) {
+		int count = fs_snapshot_list(dirfd, &alist, &abuf[0], sizeof (abuf), 0);
+		if (count < 0) {
+			perror("fs_snapshot_list");
+			exit(1);
+		} else if (count == 0) {
+			break;
+		} else {
+			char *p = &abuf[0];
+			for (int i = 0; i < count; i++) {
+				char *field = p;
+				uint32_t len = *(uint32_t *)field;
+				field += sizeof (uint32_t);
+				attribute_set_t attrs = *(attribute_set_t *)field;
+				field += sizeof (attribute_set_t);
 
-	char *p = &abuf[0];
-	for (int i = 0; i < count; i++) {
-		char *field = p;
-		uint32_t len = *(uint32_t *)field;
-		field += sizeof (uint32_t);
-		attribute_set_t attrs = *(attribute_set_t *)field;
-		field += sizeof (attribute_set_t);
+				if (attrs.commonattr & ATTR_CMN_NAME) {
+					attrreference_t ar = *(attrreference_t *)field;
+					char *name = field + ar.attr_dataoffset;
+					field += sizeof (attrreference_t);
+					(void) printf("%s\n", name);
+				}
 
-		if (attrs.commonattr & ATTR_CMN_NAME) {
-			attrreference_t ar = *(attrreference_t *)field;
-			char *name = field + ar.attr_dataoffset;
-			field += sizeof (attrreference_t);
-			(void) printf("%s\n", name);
+				p += len;
+			}
 		}
-
-		p += len;
 	}
 
 	return (0);
