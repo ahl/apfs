@@ -1,0 +1,66 @@
+.\"-
+.\" Copyright (c) 2021 Cameron Katri
+.\" SPDX-License-Identifier: Apache-2.0
+.\"
+.Dd September 28, 2021
+.Dt SNAPUTIL 1
+.Os
+.Sh NAME
+.Nm snaputil
+.Nd manipulate APFS snapshots
+.Sh SYNOPSIS
+.Nm
+.Oo
+.Fl c Ar name Ar volume |
+.Fl d Ar name Ar volume |
+.Fl l Ar volume |
+.Fl n Ar name Ar newname Ar volume |
+.Fl r Ar name Ar volume |
+.Fl s Ar name Ar volume Ar mnt
+.Oc
+.Sh DESCRIPTION
+.Nm
+perform the selected action on the specified APFS volume, then exits.
+.Bl -tag -width -indent
+.It Fl c Ar name Ar volume
+Create a snapshot called
+.Ar name
+on
+.Ar volume .
+.It Fl d Ar name Ar volume
+Delete the snapshot named
+.Ar name
+on
+.Ar volume .
+.It Fl l Ar volume
+List the snapshots on
+.Ar volume .
+.It Fl n Ar name Ar newname Ar volume
+Rename the snapshot in
+.Ar volume
+for
+.Ar name
+to
+.Ar newname .
+.It Fl r Ar name Ar volume
+Revert
+.Ar volume
+to the snapshot
+.Ar name .
+.It Fl s Ar name Ar volume Ar mnt
+Mount the snapshot
+.Ar name
+from
+.Ar volume
+at
+.Ar mnt .
+.El
+.Sh HISTORY
+The
+.Nm
+utility was written on Feburary 9, 2017, by
+.An Adam H. Leventhal
+then updated on Janurary 22, 2018 by
+.An Blair Zajac
+to use
+.In sys/snapshot.h .
