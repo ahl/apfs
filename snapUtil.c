@@ -7,7 +7,7 @@
 #include <sys/syscall.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <libgen.h>
 
 #include <unistd.h>
 #include <errno.h>
@@ -157,7 +157,7 @@ do_list(const char *vol)
 int
 main(int argc, char **argv)
 {
-	g_pname = strrchr(argv[0], '/') + 1;
+	g_pname = basename(argv[0]);
 
 	if (argc < 3 || argv[1][0] != '-' ||
 	    argv[1][1] == '\0' || argv[1][2] != '\0') {
