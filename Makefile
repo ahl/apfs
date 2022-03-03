@@ -5,7 +5,7 @@
 all: snapUtil
 
 snapUtil: snapUtil.c
-	clang -Wall -Os -g -o snapUtil snapUtil.c
+	clang -Wall -Os -g -o snapUtil snapUtil.c -framework CoreFoundation -framework IOKit
 
 clean:
 	rm -f snapUtil
