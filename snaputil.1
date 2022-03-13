@@ -15,6 +15,7 @@
 .Fl d Ar name Ar volume |
 .Fl l Ar volume |
 .Fl n Ar name Ar newname Ar volume |
+.Fl o |
 .Fl r Ar name Ar volume |
 .Fl s Ar name Ar volume Ar mnt
 .Oc
@@ -42,6 +43,8 @@ for
 .Ar name
 to
 .Ar newname .
+.It Fl o
+Query the IORegistry to determine what the system apfs snapshot's name should be.
 .It Fl r Ar name Ar volume
 Revert
 .Ar volume
