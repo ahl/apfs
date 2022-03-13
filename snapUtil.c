@@ -23,13 +23,13 @@ void
 usage(void)
 {
 	(void) fprintf(stderr, "Usage:\n");
-	(void) fprintf(stderr, "\t%s -l <vol>\t\t\t(List all snapshots)\n", g_pname);
-	(void) fprintf(stderr, "\t%s -c <snap> <vol>\t\t(Create snapshot)\n", g_pname);
-	(void) fprintf(stderr, "\t%s -n <snap> <newname> <vol>\t(Rename snapshot)\n", g_pname);
-	(void) fprintf(stderr, "\t%s -d <snap> <vol>\t\t(Delete snapshot)\n", g_pname);
-	(void) fprintf(stderr, "\t%s -r <snap> <vol>\t\t(Revert to snapshot)\n", g_pname);
-	(void) fprintf(stderr, "\t%s -s <snap> <vol> <mntpnt>\t(Mount snapshot)\n", g_pname);
-	(void) fprintf(stderr, "\t%s -o\t\t\t\t(Print original snapshot name)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -l <vol>                   (List all snapshots)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -c <snap> <vol>            (Create snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -n <snap> <newname> <vol>  (Rename snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -d <snap> <vol>            (Delete snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -r <snap> <vol>            (Revert to snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -s <snap> <vol> <mntpnt>   (Mount snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -o                         (Print original snapshot name)\n", g_pname);
 	exit(2);
 }
 
