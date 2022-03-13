@@ -14,19 +14,22 @@
 #include <sys/attr.h>
 #include <sys/snapshot.h>
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+
 const char *g_pname;
 
 void
 usage(void)
 {
 	(void) fprintf(stderr, "Usage:\n");
-	(void) fprintf(stderr, "\t%s -l <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -c <snap> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -n <snap> <newname> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -d <snap> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -r <snap> <vol>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -s <snap> <vol> <mntpnt>\n", g_pname);
-	(void) fprintf(stderr, "\t%s -u <snap> <vol>\n", g_pname);
+	(void) fprintf(stderr, "\t%s -l <vol>                   (List all snapshots)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -c <snap> <vol>            (Create snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -n <snap> <newname> <vol>  (Rename snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -d <snap> <vol>            (Delete snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -r <snap> <vol>            (Revert to snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -s <snap> <vol> <mntpnt>   (Mount snapshot)\n", g_pname);
+	(void) fprintf(stderr, "\t%s -o                         (Print original snapshot name)\n", g_pname);
 	exit(2);
 }
 
@@ -153,13 +156,54 @@ do_list(const char *vol)
 	return (0);
 }
 
+int
+do_origName(void) {
+	const UInt8 *bytes;
+	CFIndex length;
+	CFDataRef manifestHash, rootSnapshotName;
+
+	io_registry_entry_t chosen = IORegistryEntryFromPath(0, "IODeviceTree:/chosen");
+
+	rootSnapshotName = IORegistryEntryCreateCFProperty(chosen, CFSTR("root-snapshot-name"), kCFAllocatorDefault, 0);
+
+	if (rootSnapshotName != NULL && CFGetTypeID(rootSnapshotName) == CFDataGetTypeID()) {
+		CFStringRef snapshotString = CFStringCreateFromExternalRepresentation(kCFAllocatorDefault, rootSnapshotName, kCFStringEncodingUTF8);
+		CFRelease(rootSnapshotName);
+		char buffer[100];
+		const char *ptr = CFStringGetCStringPtr(snapshotString, kCFStringEncodingUTF8);
+		if (ptr == NULL) {
+			if (CFStringGetCString(snapshotString, buffer, 100, kCFStringEncodingUTF8))
+				ptr = buffer;
+		}
+		printf("%s\n", ptr);
+	} else {
+		manifestHash = (CFDataRef)IORegistryEntryCreateCFProperty(chosen, CFSTR("boot-manifest-hash"), kCFAllocatorDefault, 0);
+		IOObjectRelease(chosen);
+
+		if (manifestHash == NULL || CFGetTypeID(manifestHash) != CFDataGetTypeID()) {
+			fprintf(stderr, "Unable to read boot-manifest-hash or root-snapshot-name\n");
+			return 1;
+		}
+
+		length = CFDataGetLength(manifestHash);
+		bytes = CFDataGetBytePtr(manifestHash);
+		CFRelease(manifestHash);
+
+		printf("com.apple.os.update-");
+		for (int i = 0; i < length; i++)
+			printf("%02X", bytes[i]);
+		printf("\n");
+	}
+
+	return 0;
+}
 
 int
 main(int argc, char **argv)
 {
-	g_pname = strrchr(argv[0], '/') + 1;
+	g_pname = argv[0];
 
-	if (argc < 3 || argv[1][0] != '-' ||
+	if (argc < 2 || argv[1][0] != '-' ||
 	    argv[1][1] == '\0' || argv[1][2] != '\0') {
 		usage();
 	}
@@ -189,6 +233,10 @@ main(int argc, char **argv)
 			if (argc != 4)
 				usage();
 			return (do_revert(argv[3], argv[2]));
+		case 'o':
+			if (argc != 2)
+				usage();
+			return (do_origName());
 		default:
 			usage();
 	}
