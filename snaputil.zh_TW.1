@@ -1,0 +1,77 @@
+.\"-
+.\" Copyright (c) 2021 Cameron Katri
+.\" 翻譯版權 (c) 2022 Nick Chan
+.\" SPDX-License-Identifier: Apache-2.0
+.\"
+.Dd March 15, 2022
+.Dt SNAPUTIL 1
+.Os
+.Sh 名稱
+.Nm snaputil
+.Nd 操作蘋果檔案系統（APFS）快照
+.Sh 語法
+.Nm
+.Oo
+.Fl c Ar 名稱 Ar 卷宗 |
+.Fl d Ar 名稱 Ar 卷宗 |
+.Fl l Ar 卷宗 |
+.Fl n Ar 名稱 Ar 新名稱 Ar 卷宗 |
+.Fl o |
+.Fl r Ar 名稱 Ar 卷宗 |
+.Fl s Ar 名稱 Ar 卷宗 Ar 掛載點
+.Oc
+.Sh 描述
+.Nm
+在指定的蘋果檔案系統卷宗上執行指定的操作，然後退出。
+.Bl -tag -width -indent
+.It Fl c Ar 名稱 Ar 卷宗
+在
+.Ar 卷宗
+上創建一個名稱為
+.Ar 名稱
+的快照。
+.It Fl d Ar 名稱 Ar 卷宗
+從
+.Ar 卷宗
+上刪除名稱為
+.Ar 名稱
+的快照。
+.It Fl l Ar 卷宗
+列出在
+.Ar 卷宗
+上的所有快照。
+.It Fl n Ar 名稱 Ar 新名稱 Ar 卷宗
+重新命名在
+.Ar 卷宗
+上名稱為
+.Ar 名稱
+的快照為
+.Ar 新名稱
+。
+.It Fl o
+通過查看IORegistry來決定系統的的蘋果檔案系統快照名稱。
+.It Fl r Ar 名稱 Ar 卷宗
+把
+.Ar 卷宗
+回復到名稱為
+.Ar 名稱
+的快照。
+.It Fl s Ar 名稱 Ar 卷宗 Ar 掛載點
+把
+.Ar 卷宗
+中名稱為
+.Ar 名稱
+的快照掛在
+.Ar 掛載點
+上。
+.El
+.Sh 歷史
+這個
+.Nm
+工具程式在2017年2月9日由
+.An Adam H. Leventhal
+編寫，然後在2018年1月22日由
+.An Blair Zajac
+更新，並改為使用
+.In sys/snapshot.h
+。
